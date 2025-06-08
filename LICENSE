@@ -1,21 +1,217 @@
-MIT License
+let player;
+let items = [];
+let score = 0;
+let gameOver = false;
 
-Copyright (c) 2025 lu250710
+function setup() {
+  createCanvas(600, 400);
+  player = new Player();
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+  // Gerar itens de lixo (alguns recicláveis, outros não)
+  for (let i = 0; i < 10; i++) {
+    items.push(new Trash(random(width), random(-400, 0)));
+  }
+}
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+function draw() {
+  background(100, 200, 100); // verde claro
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+  if (!gameOver) {
+    player.update();
+    player.show();
+
+    for (let i = 0; i < items.length; i++) {
+      items[i].fall();
+      items[i].show();
+
+      if (player.collect(items[i])) {
+        if (items[i].recyclable) {
+          score++;
+        } else {
+          gameOver = true;
+        }
+        items[i].reset();
+      }
+    }
+
+    fill(0);
+    textSize(20);
+    text("Pontuação: " + score, 10, 30);
+  } else {
+    fill(0);
+    textSize(32);
+    textAlign(CENTER);
+    text("Fim de jogo!", width / 2, height / 2 - 20);
+    textSize(20);
+    text("Pontuação final: " + score, width / 2, height / 2 + 20);
+  }
+}
+
+// Classe jogador
+class Player {
+  constructor() {
+    this.x = width / 2;
+    this.size = 50;
+  }
+
+  update() {
+    if (keyIsDown(LEFT_ARROW)) {
+      this.x -= 5;
+    }
+    if (keyIsDown(RIGHT_ARROW)) {
+      this.x += 5;
+    }
+    this.x = constrain(this.x, 0, width - this.size);
+  }
+
+  show() {
+    fill(0, 100, 255);
+    rect(this.x, height - this.size, this.size, this.size);
+  }
+
+  collect(item) {
+    return (
+      item.y + item.size > height - this.size &&
+      item.x > this.x &&
+      item.x < this.x + this.size
+    );
+  }
+}
+
+// Classe de lixo
+class Trash {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.size = 30;
+    this.recyclable = random() < 0.6; // 60% chance de ser reciclável
+    this.color = this.recyclable ? color(0, 255, 0) : color(150);
+  }
+
+  fall() {
+    this.y += 3;
+    if (this.y > height) {
+      this.reset();
+    }
+  }
+
+  show() {
+    fill(this.color);
+    ellipse(this.x, this.y, this.size);
+  }
+
+  reset() {
+    this.x = random(width);
+    this.y = random(-200, 0);
+    this.recyclable = random() < 0.6;
+    this.color = this.recyclable ? color(0, 255, 0) : color(150);
+  }
+}let player;
+let items = [];
+let score = 0;
+let gameOver = false;
+
+function setup() {
+  createCanvas(600, 400);
+  player = new Player();
+
+  // Gerar itens de lixo (alguns recicláveis, outros não)
+  for (let i = 0; i < 10; i++) {
+    items.push(new Trash(random(width), random(-400, 0)));
+  }
+}
+
+function draw() {
+  background(100, 200, 100); // verde claro
+
+  if (!gameOver) {
+    player.update();
+    player.show();
+
+    for (let i = 0; i < items.length; i++) {
+      items[i].fall();
+      items[i].show();
+
+      if (player.collect(items[i])) {
+        if (items[i].recyclable) {
+          score++;
+        } else {
+          gameOver = true;
+        }
+        items[i].reset();
+      }
+    }
+
+    fill(0);
+    textSize(20);
+    text("Pontuação: " + score, 10, 30);
+  } else {
+    fill(0);
+    textSize(32);
+    textAlign(CENTER);
+    text("Fim de jogo!", width / 2, height / 2 - 20);
+    textSize(20);
+    text("Pontuação final: " + score, width / 2, height / 2 + 20);
+  }
+}
+
+// Classe jogador
+class Player {
+  constructor() {
+    this.x = width / 2;
+    this.size = 50;
+  }
+
+  update() {
+    if (keyIsDown(LEFT_ARROW)) {
+      this.x -= 5;
+    }
+    if (keyIsDown(RIGHT_ARROW)) {
+      this.x += 5;
+    }
+    this.x = constrain(this.x, 0, width - this.size);
+  }
+
+  show() {
+    fill(0, 100, 255);
+    rect(this.x, height - this.size, this.size, this.size);
+  }
+
+  collect(item) {
+    return (
+      item.y + item.size > height - this.size &&
+      item.x > this.x &&
+      item.x < this.x + this.size
+    );
+  }
+}
+
+// Classe de lixo
+class Trash {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.size = 30;
+    this.recyclable = random() < 0.6; // 60% chance de ser reciclável
+    this.color = this.recyclable ? color(0, 255, 0) : color(150);
+  }
+
+  fall() {
+    this.y += 3;
+    if (this.y > height) {
+      this.reset();
+    }
+  }
+
+  show() {
+    fill(this.color);
+    ellipse(this.x, this.y, this.size);
+  }
+
+  reset() {
+    this.x = random(width);
+    this.y = random(-200, 0);
+    this.recyclable = random() < 0.6;
+    this.color = this.recyclable ? color(0, 255, 0) : color(150);
+  }
+}
